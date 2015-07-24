@@ -32,7 +32,8 @@
         android:text="@string/boton_ingresar"
         android:id="@+id/ingresar"
         android:layout_below="@+id/password"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="accionIngresar" />
 
     <TextView
         android:layout_width="wrap_content"

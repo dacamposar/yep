@@ -1,19 +1,33 @@
 package es.davidcampos.yep;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 
 public class LoginActivity extends ActionBarActivity {
+    private final static String TAG = LoginActivity.class.getName();
+    private EditText usuario;
+    private EditText password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       // requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_login);
+        usuario = (EditText) findViewById(R.id.usuario);
+        password = (EditText) findViewById(R.id.password);
     }
     public void clicRegistro(View view) {
         Intent intent = new Intent(this, SignUpActivity.class);
@@ -26,6 +40,38 @@ public class LoginActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
     }
+
+    public void accionIngresar(View view) {
+        //TODO comprobarCampos()
+        String sUsuario = usuario.getText().toString().trim();
+        String sPassword = password.getText().toString().trim();
+        LoggingUser(sUsuario, sPassword);
+    }
+
+    private void LoggingUser(String sUsuario, String sPassword) {
+       // setProgressBarIndeterminateVisibility(true);
+
+        final ProgressDialog dialog = ProgressDialog.show(LoginActivity.this,
+                getString(R.string.mensaje_logueando),
+                getString(R.string.mensaje_espera), true);
+
+        ParseUser.logInInBackground(sUsuario, sPassword, new LogInCallback() {
+            public void done(ParseUser user, ParseException e) {
+               // setProgressBarIndeterminateVisibility(false);
+                dialog.dismiss();
+                if (user != null) {
+                    Log.d(TAG, user.getUsername() + " logueado correctamente");
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                } else {
+                    errorFieldDialog(getString(R.string.error_loguear_usuario));
+                }
+            }
+        });
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -40,5 +86,19 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void errorFieldDialog(String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle("Error")
+                .setIcon(android.R.drawable.ic_dialog_alert);
+
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+
     }
 }

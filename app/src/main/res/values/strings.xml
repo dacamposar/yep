@@ -16,4 +16,14 @@
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="hint_email">Email</string>
     <string name="boton_registro">Registrate</string>
+    <string name="error_campo_nombre_vacio">Tienes que rellenar el campo usuario</string>
+    <string name="error_campo_contrasena_vacio">Tienes que rellenar la contraseña</string>
+    <string name="error_campo_email_vacio">Tienes que rellenar el email</string>
+    <string name="error_registrar_usuario">Error al registrar el usuario</string>
+    <string name="error_loguear_usuario">Error al loguear el usuario</string>
+    <string name="menu_desconectar">desconectar</string>
+    <string name="mensaje_logueando">logueando</string>
+    <string name="mensaje_espera">Espere por favor</string>
+
+
 </resources>
