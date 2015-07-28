@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">yep</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section1">Bandeja de entrada</string>
+    <string name="title_section2">Amigos</string>
+    <string-array name="camera_choices">
+        <item>Haz una foto</item>
+        <item>Haz un video</item>
+        <item>Elige una foto</item>
+        <item>Elige un video</item>
+    </string-array>
 
     <string name="hello_world">Hello world!</string>
 
@@ -24,6 +29,13 @@
     <string name="menu_desconectar">desconectar</string>
     <string name="mensaje_logueando">logueando</string>
     <string name="mensaje_espera">Espere por favor</string>
+    <string name="mensaje_bandeja_vacia">No hay mensajes</string>
+    <string name="lista_amigos_vacia">No tiene amigos</string>
+    <string name="action_edit_friends">Añadir amigos</string>
+    <string name="title_activity_edit_friends">EditFriendsActivity</string>
+    <string name="mensaje_usuarios_vacios">No hay usuarios en el servidor</string>
+    <string name="camera">camera</string>
+    <string name="error_seleccionar_archivo">No se puede seleccionar el archivo</string>
 
 
 </resources>

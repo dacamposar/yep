@@ -23,6 +23,7 @@ public class SignUpActivity extends ActionBarActivity {
     private EditText campoPassword;
     private EditText campoEmail;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,8 +120,7 @@ public class SignUpActivity extends ActionBarActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
         builder.setMessage(message)
         .setPositiveButton(android.R.string.ok, null)
-       .setTitle("Error")
-                .setIcon(android.R.drawable.ic_dialog_alert);
+        .setTitle("Error").setIcon(android.R.drawable.ic_dialog_alert);
 
 
         AlertDialog dialog = builder.create();
