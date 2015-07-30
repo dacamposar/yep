@@ -14,6 +14,7 @@ import android.widget.EditText;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -46,6 +47,25 @@ public class LoginActivity extends ActionBarActivity {
         String sUsuario = usuario.getText().toString().trim();
         String sPassword = password.getText().toString().trim();
         LoggingUser(sUsuario, sPassword);
+    }
+
+    public void accionOlvidarPassword(View view) {
+        Intent intent = new Intent(LoginActivity.this, ForgetActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        final ProgressDialog dialog = ProgressDialog.show(LoginActivity.this,
+                getString(R.string.mensaje_cargando),
+                getString(R.string.mensaje_espera), true);
+        ParseUser.requestPasswordResetInBackground("myemail@example.com", new RequestPasswordResetCallback() {
+            public void done(ParseException e) {
+                if (e == null) {
+                    // An email was successfully sent with reset instructions.
+                } else {
+                    // Something went wrong. Look at the ParseException to see what's up.
+                }
+            }
+        });
     }
 
     private void LoggingUser(String sUsuario, String sPassword) {

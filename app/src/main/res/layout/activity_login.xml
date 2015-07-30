@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="es.davidcampos.yep.LoginActivity">
+    tools:context="es.davidcampos.yep.LoginActivity" >
 
     <EditText
         android:layout_width="match_parent"
@@ -38,10 +38,26 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/text_olvidar_password"
+        android:id="@+id/textOlvidarPassword"
+        android:clickable="true"
+        android:onClick="accionOlvidarPassword"
+        android:textSize="16sp"
+        android:layout_below="@+id/ingresar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:textColor="#ff7f65ff" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/texto_registro"
-        android:id="@+id/textView"
+        android:id="@+id/textoRegistro"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:clickable="true"
-        android:onClick="clicRegistro" />
+        android:onClick="clicRegistro"
+        android:textSize="16sp"
+        android:textColor="#ff7f65ff" />
+
 </RelativeLayout>

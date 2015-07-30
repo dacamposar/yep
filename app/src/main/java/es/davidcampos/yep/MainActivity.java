@@ -22,6 +22,9 @@ import android.view.ViewGroup;
 
 import com.parse.ParseUser;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener {
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     public static final int SELECCIONAR_FOTO_REQUEST = 2;
     public static final int SELECCIONAR_VIDEO_REQUEST = 3;
     public static final String FILTRO_IMAGENES = "image/*";
+    public static final String FILTRO_VIDEOS = "video/*";
+    public static final int LIMITE_TAM = 10 * 1024 * 1024;
     private Uri mMediaUri;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -167,6 +172,12 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     }
 
     private void seleccionaUnVideo() {
+        warningFieldDialog("Eliga un video que no exceda de 10MB");
+
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType(FILTRO_VIDEOS);
+        startActivityForResult(intent,SELECCIONAR_VIDEO_REQUEST);
+
 
     }
 
@@ -181,14 +192,12 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         mMediaUri = FileUtilities.getOutputMediaFileUri(FileUtilities.MEDIA_TYPE_VIDEO);
         if(mMediaUri == null) {
             Log.e(TAG, "Error al guardar el video");
-        }
-        else {
+        } else {
             hacerVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mMediaUri);
-            hacerVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,10);
-            hacerVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY,0);
+            hacerVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10);
+            hacerVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
 
             startActivityForResult(hacerVideoIntent, HAZ_UN_VIDEO_REQUEST);
-
 
 
         }
@@ -197,10 +206,9 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     private void hazUnaFoto() {
         Intent hacerFotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         mMediaUri = FileUtilities.getOutputMediaFileUri(FileUtilities.MEDIA_TYPE_IMAGE);
-        if(mMediaUri == null) {
+        if (mMediaUri == null) {
             Log.e(TAG, "Error al guardar la imagen");
-        }
-        else {
+        } else {
             hacerFotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mMediaUri);
             startActivityForResult(hacerFotoIntent, HAZ_UNA_FOTO_REQUEST);
 
@@ -229,24 +237,66 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK) {
-            if (requestCode == SELECCIONAR_FOTO_REQUEST ||  requestCode == SELECCIONAR_VIDEO_REQUEST){
-                if(data != null) {
+        boolean error = false;
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECCIONAR_FOTO_REQUEST || requestCode == SELECCIONAR_VIDEO_REQUEST) {
+                if (data != null) {
                     mMediaUri = data.getData();
-                }else {
-                    Log.e(TAG,getString(R.string.error_seleccionar_archivo));
-                }
-            }
-            if(requestCode == HAZ_UNA_FOTO_REQUEST){
 
+                    if (requestCode == SELECCIONAR_VIDEO_REQUEST) {
+                        int tamVideo = 0;
+                        InputStream flujoVideo = null;
+                        try {
+                            flujoVideo = getContentResolver().openInputStream(mMediaUri);
+                            tamVideo = flujoVideo.available();
+                        } catch (FileNotFoundException e) {
+                            Log.e(TAG, "Fichero no encontrado", e);
+                        } catch (IOException e) {
+                            Log.e(TAG, "Error de I/O", e);
+                        } finally {
+                            if (flujoVideo != null) {
+                                try {
+                                    flujoVideo.close();
+                                } catch (IOException e) {
+                                    Log.e(TAG, "No se ha podido cerrar el fichero", e);
+                                }
+                            }
+                        }
+
+                        if (tamVideo > LIMITE_TAM) {
+                            errorFieldDialog(getString(R.string.error_fichero_muy_grande));
+                            error = true;
+                        }
+
+                    }
+                }
+
+
+            } else if (requestCode == HAZ_UNA_FOTO_REQUEST || requestCode == HAZ_UN_VIDEO_REQUEST) {
 
                 Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 intent.setData(mMediaUri);
+
                 sendBroadcast(intent);
+            }
+
+            if(!error){
+
+                String fileType = "";
+
+                if (requestCode == HAZ_UNA_FOTO_REQUEST || requestCode == SELECCIONAR_FOTO_REQUEST)
+                    fileType = ParseConstants.TYPE_IMAGE;
+                else if (requestCode == HAZ_UN_VIDEO_REQUEST || requestCode == SELECCIONAR_VIDEO_REQUEST)
+                    fileType = ParseConstants.TYPE_VIDEO;
+
+                Intent intent = new Intent(this, RecipientsActivityWithFragment.class);
+                intent.setData(mMediaUri);
+                intent.putExtra(ParseConstants.KEY_TIPO_FICHERO, fileType);
+
+                startActivity(intent);
             }
         }
     }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -320,5 +370,28 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
             return rootView;
         }
     }
+    private void warningFieldDialog(String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle("Warning").setIcon(android.R.drawable.ic_dialog_alert);
 
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+
+    }
+    private void errorFieldDialog(String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle("Error").setIcon(android.R.drawable.ic_dialog_alert);
+
+
+        AlertDialog dialog = builder.create();
+
+        dialog.show();
+
+    }
 }

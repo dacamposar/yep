@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -22,6 +20,7 @@ public class SignUpActivity extends ActionBarActivity {
     private EditText campoUsuario;
     private EditText campoPassword;
     private EditText campoEmail;
+    private EditText campoRespuestaSeguridad;
 
 
     @Override
@@ -46,17 +45,20 @@ public class SignUpActivity extends ActionBarActivity {
         String usuario = campoUsuario.getText().toString().trim();
         String password = campoPassword.getText().toString().trim();
         String email = campoEmail.getText().toString().trim();
+        String respuestaSeguridad = campoRespuestaSeguridad.getText().toString().trim();
         if (usuario.isEmpty()) {
            errorFieldDialog(getString(R.string.error_campo_nombre_vacio));
         } else if (password.isEmpty()) {
             errorFieldDialog(getString(R.string.error_campo_contrasena_vacio));
         } else if (email.isEmpty() || !isValidEmail(email)) {
             errorFieldDialog(getString(R.string.error_campo_email_vacio));
+        } else if (respuestaSeguridad.isEmpty()) {
+            errorFieldDialog(getString(R.string.error_campo_respuesta_seguridad_vacio));
         }
-        else agnadirUsuario(usuario, password, email);
+        else agnadirUsuario(usuario, password, email, respuestaSeguridad);
     }
 
-    private void agnadirUsuario(String usuario, String password, String email) {
+    private void agnadirUsuario(String usuario, String password, String email, String respuesta) {
 
         ParseUser user = new ParseUser();
         user.setUsername(usuario);
@@ -86,29 +88,12 @@ public class SignUpActivity extends ActionBarActivity {
         campoEmail = (EditText) findViewById(R.id.email);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_sign_up, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
-    }
 
-      public  boolean isValidEmail(CharSequence target) {
+
+    public  boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
         } else {
